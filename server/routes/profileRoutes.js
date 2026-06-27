@@ -1,0 +1,16 @@
+import express from "express";
+import {
+  getProfile,
+  updateProfile,
+} from "../controllers/profileController.js";
+import protect from "../middleware/authMiddleware.js";
+
+const router = express.Router();
+
+// Get Logged-in User Profile
+router
+  .route("/")
+  .get(protect, getProfile)
+  .put(protect, updateProfile);
+
+export default router;
