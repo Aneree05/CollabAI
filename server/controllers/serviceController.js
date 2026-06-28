@@ -73,7 +73,50 @@ export const createService = async (req, res) => {
 
 export const getServices = async (req, res) => {
   try {
-    const services = await Service.find().populate(
+    const {
+      search,
+      category,
+      minPrice,
+      maxPrice,
+      rating,
+    } = req.query;
+
+    let filter = {};
+
+    // Search by title or description
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Filter by category
+    if (category) {
+      filter.category = category;
+    }
+
+    // Filter by price range
+    if (minPrice || maxPrice) {
+      filter.pricing = {};
+
+      if (minPrice) {
+        filter.pricing.$gte = Number(minPrice);
+      }
+
+      if (maxPrice) {
+        filter.pricing.$lte = Number(maxPrice);
+      }
+    }
+
+    // Filter by minimum rating
+    if (rating) {
+      filter.rating = {
+        $gte: Number(rating),
+      };
+    }
+
+    const services = await Service.find(filter).populate(
       "freelancer",
       "name email profileImage"
     );
