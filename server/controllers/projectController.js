@@ -1,5 +1,7 @@
 import Project from "../models/Project.js";
 import User from "../models/User.js";
+import { PROJECT_STATUS } from "../constants/projectStatus.js";
+
 
 export const createProject = async (req, res) => {
   try {
@@ -113,6 +115,142 @@ export const getProjectById = async (req, res) => {
     }
 
     res.status(200).json(project);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+
+export const acceptProject = async (req, res) => {
+  try {
+    const project = await Project.findById(req.params.id);
+
+    if (!project) {
+      return res.status(404).json({
+        message: "Project not found.",
+      });
+    }
+
+    // Only assigned freelancer/agency can accept
+    if (project.freelancer.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        message: "You are not assigned to this project.",
+      });
+    }
+
+    // Project must be pending
+    if (project.status !== PROJECT_STATUS.PENDING) {
+      return res.status(400).json({
+        message: "Project cannot be accepted.",
+      });
+    }
+
+    project.status = PROJECT_STATUS.ACCEPTED;
+
+    await project.save();
+
+    res.status(200).json({
+      message: "Project accepted successfully.",
+      project,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const rejectProject = async (req, res) => {
+  try {
+    const project = await Project.findById(req.params.id);
+
+    if (!project) {
+      return res.status(404).json({
+        message: "Project not found.",
+      });
+    }
+
+    // Only assigned freelancer/agency can reject
+    if (project.freelancer.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        message: "You are not assigned to this project.",
+      });
+    }
+
+    // Only pending projects can be rejected
+    if (project.status !== PROJECT_STATUS.PENDING) {
+      return res.status(400).json({
+        message: "Project cannot be rejected.",
+      });
+    }
+
+    project.status = PROJECT_STATUS.CANCELLED;
+
+    await project.save();
+
+    res.status(200).json({
+      message: "Project rejected successfully.",
+      project,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const updateProjectStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    const project = await Project.findById(req.params.id);
+
+    if (!project) {
+      return res.status(404).json({
+        message: "Project not found.",
+      });
+    }
+
+    if (project.freelancer.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        message: "You are not assigned to this project.",
+      });
+    }
+
+    if (
+      status !== PROJECT_STATUS.IN_PROGRESS &&
+      status !== PROJECT_STATUS.COMPLETED
+    ) {
+      return res.status(400).json({
+        message: "Invalid status.",
+      });
+    }
+
+    if (
+      project.status === PROJECT_STATUS.ACCEPTED &&
+      status === PROJECT_STATUS.IN_PROGRESS
+    ) {
+      project.status = status;
+    } else if (
+      project.status === PROJECT_STATUS.IN_PROGRESS &&
+      status === PROJECT_STATUS.COMPLETED
+    ) {
+      project.status = status;
+    } else {
+      return res.status(400).json({
+        message: "Invalid status transition.",
+      });
+    }
+
+    await project.save();
+
+    res.status(200).json({
+      message: "Project status updated successfully.",
+      project,
+    });
   } catch (error) {
     res.status(500).json({
       message: error.message,

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { PROJECT_STATUS } from "../constants/projectStatus.js";
 
 const projectSchema = new mongoose.Schema(
   {
@@ -45,15 +46,9 @@ const projectSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: [
-        "Pending",
-        "Accepted",
-        "In Progress",
-        "Completed",
-        "Cancelled",
-      ],
-      default: "Pending",
-    },
+      enum: Object.values(PROJECT_STATUS),
+      default: PROJECT_STATUS.PENDING,
+  },
   },
   {
     timestamps: true,
