@@ -1,6 +1,6 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
@@ -9,9 +9,10 @@ import projectRoutes from "./routes/projectRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import http from "http";
 import { initSocket } from "./socket/socket.js";
+import fileRoutes from "./routes/fileRoutes.js";
+import activityRoutes from "./routes/activityRoutes.js";
 
 
-dotenv.config();
 
 connectDB();
 
@@ -27,6 +28,8 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/files", fileRoutes);
+app.use("/api/activity", activityRoutes);
 
 
 // Test Route
