@@ -6,6 +6,9 @@ import authRoutes from "./routes/authRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import serviceRoutes from "./routes/serviceRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
+import messageRoutes from "./routes/messageRoutes.js";
+import http from "http";
+import { initSocket } from "./socket/socket.js";
 
 
 dotenv.config();
@@ -23,6 +26,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/messages", messageRoutes);
+
 
 // Test Route
 app.get("/", (req, res) => {
@@ -31,6 +36,10 @@ app.get("/", (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+const server = http.createServer(app);
+
+initSocket(server);
+
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
