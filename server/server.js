@@ -11,7 +11,7 @@ import http from "http";
 import { initSocket } from "./socket/socket.js";
 import fileRoutes from "./routes/fileRoutes.js";
 import activityRoutes from "./routes/activityRoutes.js";
-
+import aiRoutes from "./routes/aiRoutes.js";
 
 
 connectDB();
@@ -30,7 +30,7 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/files", fileRoutes);
 app.use("/api/activity", activityRoutes);
-
+app.use("/api/ai", aiRoutes);
 
 // Test Route
 app.get("/", (req, res) => {
