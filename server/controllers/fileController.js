@@ -59,18 +59,55 @@ export const uploadFile = async (req, res) => {
       fileType: req.file.mimetype.startsWith("image")
         ? "image"
         : req.file.mimetype === "application/pdf"
-        ? "pdf"
-        : "document",
+          ? "pdf"
+          : "document",
     });
 
     await ActivityLog.create({
-        project: projectId,
-        user: req.user._id,
-        action: "FILE_UPLOADED",
-        description: `${req.user.name} uploaded ${req.file.originalname}`,
+      project: projectId,
+      user: req.user._id,
+      action: "FILE_UPLOADED",
+      description: `${req.user.name} uploaded ${req.file.originalname}`,
     });
 
     res.status(201).json(file);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+
+export const getProjectFiles = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+
+    const project = await Project.findById(projectId);
+
+    if (!project) {
+      return res.status(404).json({
+        message: "Project not found.",
+      });
+    }
+
+    const isClient =
+      project.client.toString() === req.user._id.toString();
+
+    const isFreelancer =
+      project.freelancer.toString() === req.user._id.toString();
+
+    if (!isClient && !isFreelancer) {
+      return res.status(403).json({
+        message: "You are not part of this project.",
+      });
+    }
+
+    const files = await File.find({ project: projectId })
+      .populate("uploadedBy", "name profileImage")
+      .sort({ createdAt: -1 });
+
+    res.json(files);
   } catch (error) {
     res.status(500).json({
       message: error.message,
