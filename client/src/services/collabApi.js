@@ -1,13 +1,6 @@
 import api from './api'
 
-export const authApi = {
-  register: (payload) => api.post('/api/auth/register', payload),
-  login: (payload) => api.post('/api/auth/login', payload),
-}
-
 export const dashboardApi = {
-  getClient: () => api.get('/api/dashboard/client'),
-  getFreelancer: () => api.get('/api/dashboard/freelancer'),
   getAdmin: () => api.get('/api/dashboard/admin'),
 }
 

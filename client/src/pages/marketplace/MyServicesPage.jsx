@@ -7,11 +7,13 @@ import EmptyState from '../../components/ui/EmptyState'
 import ErrorState from '../../components/ui/ErrorState'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import PageHeader from '../../components/common/PageHeader'
+import useAuth from '../../contexts/useAuth'
 import { serviceApi } from '../../services/collabApi'
 
 const MyServicesPage = () => {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const { user } = useAuth()
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['my-services'],
@@ -29,7 +31,7 @@ const MyServicesPage = () => {
     },
   })
 
-  const services = (data?.data?.services || []).filter((service) => service.freelancer?.name)
+  const services = (data?.data?.services || []).filter((service) => service.freelancer?._id === user?._id)
 
   return (
     <div>

@@ -1,7 +1,6 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, Navigate } from 'react-router-dom'
 import ProtectedRoute from '../components/common/ProtectedRoute'
 import DashboardShell from '../components/dashboard/DashboardShell'
-import DashboardLayout from '../layouts/DashboardLayout'
 import MainLayout from '../layouts/MainLayout'
 import AuthLayout from '../layouts/AuthLayout'
 import LandingPage from '../pages/LandingPage'
@@ -67,13 +66,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: '',
-        element: <DashboardLayout />,
-        children: [
-          {
-            path: '',
-            element: <div className="rounded-xl border border-border bg-surface p-6">Dashboard placeholder</div>,
-          },
-        ],
+        element: <Navigate to="/marketplace" replace />,
       },
     ],
   },
@@ -127,7 +120,13 @@ const router = createBrowserRouter([
           },
           {
             path: 'admin',
-            element: <AdminPage />,
+            element: <ProtectedRoute allowedRoles={['admin']} />,
+            children: [
+              {
+                path: '',
+                element: <AdminPage />,
+              },
+            ],
           },
         ],
       },

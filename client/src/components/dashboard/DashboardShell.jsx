@@ -1,17 +1,19 @@
 import { Link, Outlet, useLocation } from 'react-router-dom'
-import { useAuth } from '../../contexts/AuthContext'
-
-const navItems = [
-  { label: 'Marketplace', path: '/marketplace' },
-  { label: 'Projects', path: '/projects' },
-  { label: 'Profile', path: '/profile' },
-  { label: 'AI', path: '/ai' },
-  { label: 'Admin', path: '/admin' },
-]
+import useAuth from '../../contexts/useAuth'
 
 const DashboardShell = () => {
   const { logout, user } = useAuth()
   const location = useLocation()
+  const isAdmin = user?.roles?.includes('admin')
+
+  const navItems = [
+    { label: 'Marketplace', path: '/marketplace' },
+    { label: 'Projects', path: '/projects' },
+    { label: 'My Services', path: '/marketplace/my-services' },
+    { label: 'Profile', path: '/profile' },
+    { label: 'AI', path: '/ai' },
+    ...(isAdmin ? [{ label: 'Admin', path: '/admin' }] : []),
+  ]
 
   return (
     <div className="min-h-screen bg-background text-text">

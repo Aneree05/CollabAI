@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useAuth } from '../../contexts/AuthContext'
+import useAuth from '../../contexts/useAuth'
 import Button from '../../components/ui/Button'
 import Card from '../../components/ui/Card'
 import EmptyState from '../../components/ui/EmptyState'
@@ -70,11 +70,18 @@ const MarketplacePage = () => {
         title="Marketplace"
         description="Browse services and publish your own offerings."
         actions={
-          canCreate ? (
-            <Button type="button" onClick={() => setShowCreateForm((prev) => !prev)}>
-              {showCreateForm ? 'Cancel' : 'Create Service'}
-            </Button>
-          ) : null
+          <div className="flex flex-wrap gap-3">
+            {canCreate ? (
+              <Button type="button" onClick={() => setShowCreateForm((prev) => !prev)}>
+                {showCreateForm ? 'Cancel' : 'Create Service'}
+              </Button>
+            ) : null}
+            {canCreate ? (
+              <Button type="button" variant="secondary" onClick={() => navigate('/marketplace/my-services')}>
+                My Services
+              </Button>
+            ) : null}
+          </div>
         }
       />
 
