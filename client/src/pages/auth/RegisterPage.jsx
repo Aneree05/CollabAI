@@ -1,15 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
+import { Link, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import Button from '../../components/ui/Button'
 import Card from '../../components/ui/Card'
 import Input from '../../components/ui/Input'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import api from '../../services/api'
-import { useAuth } from '../../contexts/AuthContext'
 
 const registerSchema = z
   .object({
@@ -26,7 +25,6 @@ const registerSchema = z
 
 const RegisterPage = () => {
   const navigate = useNavigate()
-  const { login } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const {
@@ -36,7 +34,7 @@ const RegisterPage = () => {
   } = useForm({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      role: 'client',
+      roles: 'client',
     },
   })
 
@@ -44,29 +42,19 @@ const RegisterPage = () => {
     setIsSubmitting(true)
 
     try {
-      const response = await api.post('/api/auth/register', {
+      await api.post('/api/auth/register', {
         name: values.name,
         email: values.email,
         password: values.password,
         roles: [values.roles],
+        skills: [],
+        experience: '',
+        portfolio: '',
+        profileImage: '',
       })
 
-      const { token, user } = response.data
-      login(token, user)
-      localStorage.setItem('token', token)
-      localStorage.setItem('user', JSON.stringify(user))
-
-      const roles = Array.isArray(user?.roles) ? user.roles : []
-      const dashboardPath = roles.includes('admin')
-        ? '/dashboard/admin'
-        : roles.includes('client')
-          ? '/dashboard/client'
-          : roles.includes('freelancer') || roles.includes('agency')
-            ? '/dashboard/freelancer'
-            : '/dashboard'
-
-      toast.success('Registration successful')
-      navigate(dashboardPath)
+      toast.success('Registration successful. Please sign in.')
+      navigate('/login', { replace: true })
     } catch (error) {
       const message = error?.response?.data?.message || 'Registration failed'
       toast.error(message)

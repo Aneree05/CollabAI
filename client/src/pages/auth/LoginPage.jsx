@@ -1,15 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
+import { useAuth } from '../../contexts/AuthContext'
 import Button from '../../components/ui/Button'
 import Card from '../../components/ui/Card'
 import Input from '../../components/ui/Input'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import api from '../../services/api'
-import { useAuth } from '../../contexts/AuthContext'
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -18,6 +18,7 @@ const loginSchema = z.object({
 
 const LoginPage = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const { login } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -37,20 +38,9 @@ const LoginPage = () => {
       const { token, user } = response.data
 
       login(token, user)
-      localStorage.setItem('token', token)
-      localStorage.setItem('user', JSON.stringify(user))
-
-      const roles = Array.isArray(user?.roles) ? user.roles : []
-      const dashboardPath = roles.includes('admin')
-        ? '/dashboard/admin'
-        : roles.includes('client')
-          ? '/dashboard/client'
-          : roles.includes('freelancer') || roles.includes('agency')
-            ? '/dashboard/freelancer'
-            : '/dashboard'
 
       toast.success('Login successful')
-      navigate(dashboardPath)
+      navigate(location.state?.from?.pathname || '/marketplace', { replace: true })
     } catch (error) {
       const message = error?.response?.data?.message || 'Login failed'
       toast.error(message)
@@ -83,9 +73,7 @@ const LoginPage = () => {
             <input type="checkbox" className="rounded border-border" />
             <span>Remember Me</span>
           </label>
-          <button type="button" className="text-primary" disabled>
-            Forgot Password
-          </button>
+          <span className="cursor-not-allowed text-secondary">Forgot Password</span>
         </div>
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>

@@ -18,7 +18,7 @@ const ProtectedRoute = ({
   }
 
   if (!requireAuth && token) {
-    return <Navigate to='/' replace />
+    return <Navigate to={location.state?.from?.pathname || '/marketplace'} replace />
   }
 
   if (allowedRoles.length > 0) {
