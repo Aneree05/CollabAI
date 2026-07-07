@@ -3,6 +3,7 @@ import ProtectedRoute from '../components/common/ProtectedRoute'
 import DashboardLayout from '../layouts/DashboardLayout'
 import MainLayout from '../layouts/MainLayout'
 import AuthLayout from '../layouts/AuthLayout'
+import LandingPage from '../pages/LandingPage'
 import LoginPage from '../pages/auth/LoginPage'
 import RegisterPage from '../pages/auth/RegisterPage'
 
@@ -17,7 +18,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: '',
-            element: <div className="rounded-xl border border-border bg-surface p-6">Home placeholder</div>,
+            element: <LandingPage />,
           },
         ],
       },
