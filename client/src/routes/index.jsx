@@ -2,6 +2,9 @@ import { createBrowserRouter } from 'react-router-dom'
 import ProtectedRoute from '../components/common/ProtectedRoute'
 import DashboardLayout from '../layouts/DashboardLayout'
 import MainLayout from '../layouts/MainLayout'
+import AuthLayout from '../layouts/AuthLayout'
+import LoginPage from '../pages/auth/LoginPage'
+import RegisterPage from '../pages/auth/RegisterPage'
 
 const router = createBrowserRouter([
   {
@@ -10,7 +13,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: '',
-        element: <ProtectedRoute requireAuth={false} />, 
+        element: <ProtectedRoute requireAuth={false} />,
         children: [
           {
             path: '',
@@ -18,13 +21,29 @@ const router = createBrowserRouter([
           },
         ],
       },
+    ],
+  },
+  {
+    path: '/',
+    element: <AuthLayout />,
+    children: [
       {
-        path: 'auth',
-        element: <ProtectedRoute requireAuth={false} />, 
+        path: 'login',
+        element: <ProtectedRoute requireAuth={false} />,
         children: [
           {
-            path: 'login',
-            element: <div className="rounded-xl border border-border bg-surface p-6">Auth placeholder</div>,
+            path: '',
+            element: <LoginPage />,
+          },
+        ],
+      },
+      {
+        path: 'register',
+        element: <ProtectedRoute requireAuth={false} />,
+        children: [
+          {
+            path: '',
+            element: <RegisterPage />,
           },
         ],
       },

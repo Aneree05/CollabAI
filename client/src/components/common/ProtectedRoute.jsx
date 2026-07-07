@@ -2,7 +2,7 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 
 const ProtectedRoute = ({
-  redirectPath = '/auth/login',
+  redirectPath = '/login',
   requireAuth = true,
   allowedRoles = [],
 }) => {
@@ -21,8 +21,13 @@ const ProtectedRoute = ({
     return <Navigate to='/' replace />
   }
 
-  if (allowedRoles.length > 0 && user?.role && !allowedRoles.includes(user.role)) {
-    return <Navigate to='/' replace />
+  if (allowedRoles.length > 0) {
+    const roles = Array.isArray(user?.roles) ? user.roles : []
+    const hasAccess = roles.some((role) => allowedRoles.includes(role))
+
+    if (!hasAccess) {
+      return <Navigate to='/' replace />
+    }
   }
 
   return <Outlet />
